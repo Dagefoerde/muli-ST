@@ -1,31 +1,40 @@
+import trail.TrailElement;
+import trail.VariableChanged;
+
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static java.util.Optional.ofNullable;
+
 public class STDemo {
+    private boolean restoringMode = false;
+
     public static void main(String[] args) {
         new STDemo();
     }
 
     private int pc;
+
     private Program program;
     private HashMap<String, Integer> heap;
+    private Stack<TrailElement> currentTrail;
 
     public STDemo() {
         //program = new SimpleCoin();
         //program = new ComplicatedCoin();
         //program = new InfiniteCoin();
-        program = new InfinitePrintingCoin();
+        //program = new InfinitePrintingCoin();
         program = new AssignmentCoin();
 
         // Init execution.
         heap = new HashMap<>();
-        ST<Object> tree = new UnevaluatedST<>(0);
+        currentTrail = new Stack<>();
+        ST<Object> tree = new UnevaluatedST<>(0, new Stack<>());
 
         //List<Object> leaves = walkDFS(tree);
-        List<Object> leaves = lazyBFS(tree).limit(6).collect(Collectors.toList());
+        List<Object> leaves = lazyDFS(tree).limit(6).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
         printDFS(tree, 0);
@@ -97,8 +106,8 @@ public class STDemo {
 
     public void setPC(int pc) {
         this.pc = pc;
-        System.out.println(pc);
     }
+
     public int getPC() {
         return this.pc;
     }
@@ -112,11 +121,33 @@ public class STDemo {
     }
 
     public void setVar(String key, int val) {
+        Optional<Integer> formerValue = Optional.ofNullable(heap.get(key));
+        VariableChanged variableChanged = new VariableChanged(key, formerValue, val);
         heap.put(key, val);
+        if (!this.restoringMode) {
+            currentTrail.push(variableChanged);
+        }
     }
 
     public int getVar(String key) {
         return heap.get(key);
+    }
+
+    public Stack<TrailElement> getCurrentTrail() {
+        Stack<TrailElement> trail = this.currentTrail;
+        this.currentTrail = new Stack<>();
+        return trail;
+    }
+
+    public void applyState(Stack<TrailElement> previousState) {
+        this.restoringMode = true;
+        for (TrailElement e : previousState) {
+            if (e instanceof VariableChanged) {
+                VariableChanged vc = (VariableChanged) e;
+                this.setVar(vc.variable, vc.newValue);
+            }
+        }
+        this.restoringMode = false;
     }
 }
 
@@ -146,14 +177,12 @@ class Choice<A> extends ST<A> {
     public ST<A> st2;
     private final String ce1;
     private final String ce2;
-    public int state;
 
-    public Choice(int pcNext, int pcWithJump, String constraintExpression, int state) {
-        this.st1 = new UnevaluatedST<A>(pcNext);
-        this.st2 = new UnevaluatedST<A>(pcWithJump);
+    public Choice(int pcNext, int pcWithJump, String constraintExpression, Stack<TrailElement> state) {
+        this.st1 = new UnevaluatedST<A>(pcNext, state);
+        this.st2 = new UnevaluatedST<A>(pcWithJump, state);
         this.ce1 = constraintExpression;
         this.ce2 = "not " + constraintExpression;
-        this.state = state;
     }
 
 
@@ -161,25 +190,30 @@ class Choice<A> extends ST<A> {
 
 class UnevaluatedST<A> extends ST<A> {
     private final int pc;
+    private final Stack<TrailElement> previousState;
 
-    private ST evaluated = null;
+    private ST<A> evaluated = null;
 
     public boolean isEvaluated() {
         return this.evaluated != null;
     }
 
-    public UnevaluatedST(int pc) {
+    public UnevaluatedST(int pc, Stack<TrailElement> previousState) {
+        this.previousState = previousState;
         this.pc = pc;
 
     }
 
-    public ST eval(STDemo vm) {
+    public ST<A> eval(STDemo vm) {
         if (evaluated != null) {
             return evaluated;
         }
 
+        // Apply state from `previousState`.
+        vm.applyState(previousState);
         vm.setPC(this.pc);
         this.evaluated = vm.execute();
+        // this.previousState = null; (previousState not needed anymore).
         return this.evaluated;
     }
 }

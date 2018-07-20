@@ -27,12 +27,14 @@ class TreeDFSIterator<T> implements Spliterator<T> {
             action.accept(((Value<T>)tree).value);
             return true;
         } else if (tree instanceof Choice) {
-            nodes.push(((Choice) tree).st2);
-            nodes.push(((Choice) tree).st1);
+            // First push st2 so that st1 (and its children) will be popped first.
+            nodes.push(((Choice<T>) tree).st2);
+            nodes.push(((Choice<T>) tree).st1);
             return tryAdvance(action);
         } else if (tree instanceof UnevaluatedST) {
             UnevaluatedST uneval = (UnevaluatedST) tree;
-            nodes.push(uneval.eval(this.vm));
+            ST<T> eval = uneval.eval(this.vm);
+            nodes.push(eval);
             return tryAdvance(action);
         } else {
             throw new IllegalStateException();
@@ -54,3 +56,4 @@ class TreeDFSIterator<T> implements Spliterator<T> {
         return 0;
     }
 }
+
