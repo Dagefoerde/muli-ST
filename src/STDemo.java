@@ -1,7 +1,8 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class STDemo {
     public static void main(String[] args) {
@@ -12,20 +13,19 @@ public class STDemo {
     private Program program;
 
     public STDemo() {
-        program = new SimpleCoin();
+        //program = new SimpleCoin();
+        program = new ComplicatedCoin();
         ST<Object> tree = new UnevaluatedST<>(0);
-        ST<Object> treeAfter = new Choice<Object>(2, 4, "coin",1);
-        ((Choice)treeAfter).st1 = new Value<Object>("coin || False");
-        ((Choice)treeAfter).st2 = new Value<Object>("coin && True");
 
-        List<Object> leaves = walkDFS(tree);
-        List<Object> leaves2 = walkDFS(treeAfter);
+        //List<Object> leaves = walkDFS(tree);
+        List<Object> leaves = lazyBFS(tree).limit(1).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
-        System.out.print("Erwartet: ");
-        Stream.of(leaves2).forEach(System.out::println);
+        printDFS(tree, 0);
+        //System.out.print("Erwartet: ");
+        //Stream.of(leaves2).forEach(System.out::println);
 
-        assert (tree.equals(treeAfter));
+        //assert (tree.equals(treeAfter));
     }
 
     public List walkDFS(ST tree) {
@@ -51,6 +51,32 @@ public class STDemo {
         }
     }
 
+    public Stream<Object> lazyDFS(ST tree) {
+        return StreamSupport.stream(new TreeDFSIterator<>(tree, this), false);
+    }
+
+    public Stream<Object> lazyBFS(ST tree) {
+        return StreamSupport.stream(new TreeBFSIterator<>(tree, this), false);
+    }
+
+    public void printDFS(ST tree, int depth) {
+        if (tree instanceof Fail) {
+            System.out.println("- Fail");
+        } else if (tree instanceof Exception) {
+            System.out.println("- Exception " + ((Exception)tree).exception);
+        } else if (tree instanceof Value) {
+            System.out.println("- Value " + ((Value)tree).value);
+        } else if (tree instanceof Choice) {
+            printDFS(((Choice) tree).st1, depth + 1);
+            printDFS(((Choice) tree).st2, depth + 1);
+        } else if (tree instanceof UnevaluatedST) {
+            if (((UnevaluatedST)tree).isEvaluated()) printDFS(((UnevaluatedST)tree).eval(this), depth);
+            else System.out.println("- UnevaluatedST");
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
     public void setPC(int pc) {
         this.pc = pc;
         System.out.println(pc);
@@ -61,6 +87,117 @@ public class STDemo {
 
     public ST execute() {
         return program.execute(this, this.getPC());
+    }
+}
+
+class TreeDFSIterator<T> implements Spliterator<T> {
+    private final Stack<ST<T>> nodes;
+    private final STDemo vm;
+
+    public TreeDFSIterator(ST<T> st, STDemo vm) {
+        nodes = new Stack<>();
+        nodes.push(st);
+        this.vm = vm;
+    }
+
+    @Override
+    public boolean tryAdvance(Consumer<? super T> action) {
+        if (nodes.isEmpty()) {
+            return false;
+        }
+        ST<T> tree = nodes.pop();
+        if (tree instanceof Fail) {
+            return tryAdvance(action);
+        } else if (tree instanceof Exception) {
+            action.accept(null);
+            return true;
+        } else if (tree instanceof Value) {
+            action.accept(((Value<T>)tree).value);
+            return true;
+        } else if (tree instanceof Choice) {
+            nodes.push(((Choice) tree).st2);
+            nodes.push(((Choice) tree).st1);
+            return tryAdvance(action);
+        } else if (tree instanceof UnevaluatedST) {
+            UnevaluatedST uneval = (UnevaluatedST) tree;
+            nodes.push(uneval.eval(this.vm));
+            return tryAdvance(action);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public Spliterator<T> trySplit() {
+        return null;
+    }
+
+    @Override
+    public long estimateSize() {
+        return Long.MAX_VALUE;
+    }
+
+    @Override
+    public int characteristics() {
+        return 0;
+    }
+}
+
+class TreeBFSIterator<T> implements Spliterator<T> {
+    private final LinkedList<ST<T>> queue;
+    private final STDemo vm;
+
+    public TreeBFSIterator(ST<T> st, STDemo vm) {
+        queue = new LinkedList<>();
+        queue.add(st);
+        this.vm = vm;
+    }
+
+    @Override
+    public boolean tryAdvance(Consumer<? super T> action) {
+        if (queue.isEmpty()) {
+            return false;
+        }
+        ST<T> tree = queue.remove();
+        if (tree instanceof Fail) {
+            return tryAdvance(action);
+        } else if (tree instanceof Exception) {
+            action.accept(null);
+            return true;
+        } else if (tree instanceof Value) {
+            action.accept(((Value<T>)tree).value);
+            return true;
+        } else if (tree instanceof Choice) {
+            queue.add(((Choice) tree).st1);
+            queue.add(((Choice) tree).st2);
+            return tryAdvance(action);
+        } else if (tree instanceof UnevaluatedST) {
+            UnevaluatedST uneval = (UnevaluatedST) tree;
+            ST result = uneval.eval(this.vm);
+            if (result instanceof Choice) {
+                queue.add(result);
+            } else {
+                queue.addFirst(result);
+            }
+            return tryAdvance(action);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Override
+    public Spliterator<T> trySplit() {
+        return null;
+    }
+
+    @Override
+    public long estimateSize() {
+        return Long.MAX_VALUE;
+    }
+
+    @Override
+    public int characteristics() {
+        return 0;
     }
 }
 
@@ -108,6 +245,10 @@ class UnevaluatedST<A> extends ST<A> {
 
     private ST evaluated = null;
 
+    public boolean isEvaluated() {
+        return this.evaluated != null;
+    }
+
     public UnevaluatedST(int pc) {
         this.pc = pc;
 
@@ -119,7 +260,8 @@ class UnevaluatedST<A> extends ST<A> {
         }
 
         vm.setPC(this.pc);
-        return vm.execute();
+        this.evaluated = vm.execute();
+        return this.evaluated;
     }
 }
 
