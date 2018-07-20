@@ -3,6 +3,7 @@
  *    1: int i = 1;
  *    2: if (coin) {
  *    3:    i = 0;
+ *          int j = 2;
  *    4: } else {
  *    6: }
  *    7: return i;
@@ -17,14 +18,14 @@ public class AssignmentCoin implements Program {
                 vm.setVar("i", 1);
             case 2:
                 vm.setPC(2);
-                return new Choice(3, 5, "true", 2);
+                return new Choice(3, 5, "true", vm.getCurrentTrail());
             case 3:
                 vm.setPC(3);
                 vm.setVar("i", 0);
                 return execute(vm, 7);
             case 5:
                 vm.setPC(5);
-            //    vm.setVar("i", 1);
+                vm.setVar("i", 2);
             case 7:
                 vm.setPC(7);
                 return new Value(vm.getVar("i"));
