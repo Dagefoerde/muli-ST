@@ -1,4 +1,11 @@
-public class SimpleCoin  implements Program {
+/**
+ * pc 0: boolean coin free;
+ *    1: if (coin1) {
+ *    2:    return (coin1 || false);
+ *    3: } else {
+ *    4:    return (coin1 && true);
+ *    5: }
+ */public class SimpleCoin  implements Program {
     public ST execute(STDemo vm, int pc) {
         switch (pc) {
             case 0:
