@@ -15,7 +15,8 @@ public class STDemo {
     public STDemo() {
         //program = new SimpleCoin();
         //program = new ComplicatedCoin();
-        program = new InfiniteCoin();
+        //program = new InfiniteCoin();
+        program = new InfinitePrintingCoin();
         ST<Object> tree = new UnevaluatedST<>(0);
 
         //List<Object> leaves = walkDFS(tree);
@@ -99,6 +100,10 @@ public class STDemo {
 
     public ST execute() {
         return program.execute(this, this.getPC());
+    }
+
+    public void println(String s) {
+        System.out.println(s);
     }
 }
 
