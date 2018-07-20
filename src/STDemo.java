@@ -11,12 +11,17 @@ public class STDemo {
 
     private int pc;
     private Program program;
+    private HashMap<String, Integer> heap;
 
     public STDemo() {
         //program = new SimpleCoin();
         //program = new ComplicatedCoin();
         //program = new InfiniteCoin();
         program = new InfinitePrintingCoin();
+        program = new AssignmentCoin();
+
+        // Init execution.
+        heap = new HashMap<>();
         ST<Object> tree = new UnevaluatedST<>(0);
 
         //List<Object> leaves = walkDFS(tree);
@@ -104,6 +109,14 @@ public class STDemo {
 
     public void println(String s) {
         System.out.println(s);
+    }
+
+    public void setVar(String key, int val) {
+        heap.put(key, val);
+    }
+
+    public int getVar(String key) {
+        return heap.get(key);
     }
 }
 
