@@ -1,7 +1,4 @@
-import de.wwu.muggl.solvers.expressions.ConstraintExpression;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -12,8 +9,10 @@ public class STDemo {
     }
 
     private int pc;
+    private Program program;
 
     public STDemo() {
+        program = new SimpleCoin();
         ST<Object> tree = new UnevaluatedST<>(0);
         ST<Object> treeAfter = new Choice<Object>(2, 4, "coin",1);
         ((Choice)treeAfter).st1 = new Value<Object>("coin || False");
@@ -21,7 +20,9 @@ public class STDemo {
 
         List<Object> leaves = walkDFS(tree);
         List<Object> leaves2 = walkDFS(treeAfter);
+        System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
+        System.out.print("Erwartet: ");
         Stream.of(leaves2).forEach(System.out::println);
 
         assert (tree.equals(treeAfter));
@@ -56,6 +57,10 @@ public class STDemo {
     }
     public int getPC() {
         return this.pc;
+    }
+
+    public ST execute() {
+        return program.execute(this, this.getPC());
     }
 }
 
@@ -113,29 +118,8 @@ class UnevaluatedST<A> extends ST<A> {
             return evaluated;
         }
 
-        ST result;
         vm.setPC(this.pc);
-        // Execute something
-        switch (this.pc) {
-            case 0:
-                vm.setPC(0);
-            case 1:
-                vm.setPC(1);
-                result = new Choice(2, 4, "true", 1);
-                break;
-            case 2:
-                vm.setPC(2);
-                result = new Value("coin || False"); // True
-                break;
-            case 4:
-                vm.setPC(4);
-                result = new Value("coin && True"); // False
-                break;
-            default:
-                throw new IllegalStateException();
-        }
-        this.evaluated = result;
-        return result;
+        return vm.execute();
     }
 }
 
