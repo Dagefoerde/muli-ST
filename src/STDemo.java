@@ -14,11 +14,12 @@ public class STDemo {
 
     public STDemo() {
         //program = new SimpleCoin();
-        program = new ComplicatedCoin();
+        //program = new ComplicatedCoin();
+        program = new InfiniteCoin();
         ST<Object> tree = new UnevaluatedST<>(0);
 
         //List<Object> leaves = walkDFS(tree);
-        List<Object> leaves = lazyBFS(tree).limit(1).collect(Collectors.toList());
+        List<Object> leaves = lazyBFS(tree).limit(6).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
         printDFS(tree, 0);
@@ -61,20 +62,31 @@ public class STDemo {
 
     public void printDFS(ST tree, int depth) {
         if (tree instanceof Fail) {
-            System.out.println("- Fail");
+            System.out.println(repeat("    ", depth) + "- Fail");
         } else if (tree instanceof Exception) {
-            System.out.println("- Exception " + ((Exception)tree).exception);
+            System.out.println(repeat("    ", depth) + "- Exception " + ((Exception)tree).exception);
         } else if (tree instanceof Value) {
-            System.out.println("- Value " + ((Value)tree).value);
+            System.out.println(repeat("    ", depth) + "- Value " + ((Value)tree).value);
         } else if (tree instanceof Choice) {
+            
+            System.out.println(repeat("    ", depth) + "- Choice ");
             printDFS(((Choice) tree).st1, depth + 1);
             printDFS(((Choice) tree).st2, depth + 1);
         } else if (tree instanceof UnevaluatedST) {
             if (((UnevaluatedST)tree).isEvaluated()) printDFS(((UnevaluatedST)tree).eval(this), depth);
-            else System.out.println("- UnevaluatedST");
+            else
+                System.out.println(repeat("    ", depth) + "- UnevaluatedST ");
         } else {
             throw new IllegalStateException();
         }
+    }
+
+    private String repeat(String s, int depth) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < depth; i++) {
+            result.append(s);
+        }
+        return result.toString();
     }
 
     public void setPC(int pc) {
