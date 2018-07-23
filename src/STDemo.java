@@ -29,7 +29,8 @@ public class STDemo implements VM {
         //program = new InfiniteCoin();
         //program = new InfinitePrintingCoin();
         //program = new AssignmentCoin();
-        program = new ComplicatedAssignmentCoin();
+        //program = new ComplicatedAssignmentCoin();
+        program = new InfiniteComplicatedAssignmentCoin();
 
         // Init execution.
         heap = new HashMap<>();
@@ -37,7 +38,7 @@ public class STDemo implements VM {
         ST<Object> tree = new STProxy<>(0, null);
 
         //List<Object> leaves = strictDFS(tree);
-        List<Object> leaves = lazyBFS(tree).limit(6).collect(Collectors.toList());
+        List<Object> leaves = lazyBFS(tree).limit(5).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
         printDFS(tree, 0);
@@ -102,7 +103,7 @@ public class STDemo implements VM {
         } else if (tree instanceof STProxy) {
             if (((STProxy)tree).isEvaluated()) printDFS(((STProxy)tree).eval(this), depth);
             else
-                System.out.println(repeat("    ", depth) + "- STProxy ");
+                System.out.println(repeat("    ", depth) + "- (not evaluated) ");
         } else {
             throw new IllegalStateException("Unknown tree node type.");
         }
