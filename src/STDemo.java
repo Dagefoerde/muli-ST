@@ -6,8 +6,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.util.Optional.ofNullable;
-
 public class STDemo {
     private boolean restoringMode = false;
 
@@ -33,18 +31,18 @@ public class STDemo {
         currentTrail = new Stack<>();
         ST<Object> tree = new UnevaluatedST<>(0, new Stack<>());
 
-        //List<Object> leaves = walkDFS(tree);
+        //List<Object> leaves = strictDFS(tree);
         List<Object> leaves = lazyDFS(tree).limit(6).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
         printDFS(tree, 0);
-        //System.out.print("Erwartet: ");
-        //Stream.of(leaves2).forEach(System.out::println);
 
-        //assert (tree.equals(treeAfter));
+        System.out.println("Heap after (expect empty):");
+        heap.forEach((k,v) -> System.out.println(String.format("%s:%s",k, v)));
+
     }
 
-    public List walkDFS(ST tree) {
+    public List strictDFS(ST tree) {
         if (tree instanceof Fail) {
             return Collections.EMPTY_LIST;
         } else if (tree instanceof Exception) {
@@ -56,14 +54,14 @@ public class STDemo {
             l.add(((Value)tree).value);
             return l;
         } else if (tree instanceof Choice) {
-            List list = walkDFS(((Choice) tree).st1);
-            list.addAll(walkDFS(((Choice) tree).st2));
+            List list = strictDFS(((Choice) tree).st1);
+            list.addAll(strictDFS(((Choice) tree).st2));
             return list;
         } else if (tree instanceof UnevaluatedST) {
             UnevaluatedST uneval = (UnevaluatedST) tree;
-            return walkDFS(uneval.eval(this));
+            return strictDFS(uneval.eval(this));
         } else {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unknown tree node type.");
         }
     }
 
@@ -92,7 +90,7 @@ public class STDemo {
             else
                 System.out.println(repeat("    ", depth) + "- UnevaluatedST ");
         } else {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unknown tree node type.");
         }
     }
 
