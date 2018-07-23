@@ -21,7 +21,7 @@ public class STDemo implements VM {
 
     private Program program;
     private HashMap<String, Integer> heap;
-    private Stack<TrailElement> currentTrail;
+    private LinkedList<TrailElement> currentTrail;
 
     public STDemo() {
         //program = new SimpleCoin();
@@ -33,7 +33,7 @@ public class STDemo implements VM {
 
         // Init execution.
         heap = new HashMap<>();
-        currentTrail = new Stack<>();
+        currentTrail = new LinkedList<>();
         ST<Object> tree = new STProxy<>(0, null);
 
         //List<Object> leaves = strictDFS(tree);
@@ -147,13 +147,13 @@ public class STDemo implements VM {
         return heap.get(key);
     }
 
-    public Stack<TrailElement> getCurrentTrail() {
-        Stack<TrailElement> trail = this.currentTrail;
-        this.currentTrail = new Stack<>();
+    public LinkedList<TrailElement> getCurrentTrail() {
+        LinkedList<TrailElement> trail = this.currentTrail;
+        this.currentTrail = new LinkedList<>();
         return trail;
     }
 
-    public void applyState(Stack<TrailElement> previousState) {
+    public void applyState(LinkedList<TrailElement> previousState) {
         this.restoringMode = true;
         for (TrailElement e : previousState) {
             if (e instanceof VariableChanged) {
@@ -164,7 +164,7 @@ public class STDemo implements VM {
         this.restoringMode = false;
     }
 
-    public void revertState(Stack<TrailElement> previousState) {
+    public void revertState(LinkedList<TrailElement> previousState) {
         this.restoringMode = true;
         // TODO Reverse order.
         for (TrailElement e : previousState) {

@@ -4,7 +4,7 @@ package searchtree;
 import trail.TrailElement;
 import vm.VM;
 
-import java.util.Stack;
+import java.util.LinkedList;
 
 public class STProxy<A> extends ST<A> {
     /**
@@ -45,9 +45,9 @@ public class STProxy<A> extends ST<A> {
      * n does not have a local trail.
      * @return
      */
-    public Stack<TrailElement> getTrail() {
+    public LinkedList<TrailElement> getTrail() {
         Choice<A> before = this.childOf;
-        Stack<TrailElement> trail = new Stack<>();
+        LinkedList<TrailElement> trail = new LinkedList<>();
         while (before != null) {
             trail.addAll(0, before.trail);
             before = before.parent;

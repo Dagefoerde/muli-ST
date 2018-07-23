@@ -3,7 +3,6 @@ import trail.TrailElement;
 
 import java.util.LinkedList;
 import java.util.Spliterator;
-import java.util.Stack;
 import java.util.function.Consumer;
 
 class TreeBFSIterator<T> implements Spliterator<T> {
@@ -37,7 +36,7 @@ class TreeBFSIterator<T> implements Spliterator<T> {
         } else if (tree instanceof STProxy) {
             STProxy<T> uneval = (STProxy<T>) tree;
             // Compute trail for restoring state.
-            Stack<TrailElement> trail = uneval.getTrail();
+            LinkedList<TrailElement> trail = uneval.getTrail();
             // Apply VM state.
             this.vm.applyState(trail);
             Choice<T> previousChoice = this.vm.getCurrentChoice();
