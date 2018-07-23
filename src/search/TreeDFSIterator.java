@@ -1,26 +1,32 @@
+package search;
+
 import searchtree.*;
 import trail.TrailElement;
+import vm.VM;
 
 import java.util.LinkedList;
 import java.util.Spliterator;
+import java.util.Stack;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-class TreeBFSIterator<T> implements Spliterator<T> {
-    private final LinkedList<ST<T>> queue;
-    private final STDemo vm;
+public class TreeDFSIterator<T> implements Spliterator<T> {
+    private final Stack<ST<T>> nodes;
+    private final VM vm;
 
-    public TreeBFSIterator(ST<T> st, STDemo vm) {
-        queue = new LinkedList<>();
-        queue.add(st);
+    public TreeDFSIterator(ST<T> st, VM vm) {
+        nodes = new Stack<>();
+        nodes.push(st);
         this.vm = vm;
     }
 
     @Override
     public boolean tryAdvance(Consumer<? super T> action) {
-        if (queue.isEmpty()) {
+        if (nodes.isEmpty()) {
             return false;
         }
-        ST<T> tree = queue.remove();
+        ST<T> tree = nodes.pop();
         if (tree instanceof Fail) {
             return tryAdvance(action);
         } else if (tree instanceof searchtree.Exception) {
@@ -30,8 +36,9 @@ class TreeBFSIterator<T> implements Spliterator<T> {
             action.accept(((Value<T>)tree).value);
             return true;
         } else if (tree instanceof Choice) {
-            queue.add(((Choice<T>) tree).st1);
-            queue.add(((Choice<T>) tree).st2);
+            // First push st2 so that st1 (and its children) will be popped first.
+            nodes.push(((Choice<T>) tree).st2);
+            nodes.push(((Choice<T>) tree).st1);
             return tryAdvance(action);
         } else if (tree instanceof STProxy) {
             STProxy<T> uneval = (STProxy<T>) tree;
@@ -52,11 +59,7 @@ class TreeBFSIterator<T> implements Spliterator<T> {
             } else {
                 result = uneval.eval(this.vm);
             }
-            if (result instanceof Choice) {
-                queue.add(result);
-            } else {
-                queue.addFirst(result);
-            }
+            nodes.push(result);
             return tryAdvance(action);
         } else {
             throw new IllegalStateException();
@@ -77,4 +80,9 @@ class TreeBFSIterator<T> implements Spliterator<T> {
     public int characteristics() {
         return 0;
     }
+
+    public static <A> Stream<A> stream(ST<A> tree, VM vm) {
+        return StreamSupport.stream(new TreeDFSIterator<A>(tree, vm), false);
+    }
 }
+

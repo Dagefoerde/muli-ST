@@ -1,3 +1,7 @@
+import examples.ComplicatedAssignmentCoin;
+import examples.Program;
+import search.TreeBFSIterator;
+import search.TreeDFSIterator;
 import searchtree.*;
 import searchtree.Exception;
 import trail.TrailElement;
@@ -7,7 +11,6 @@ import vm.VM;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class STDemo implements VM {
     private boolean restoringMode = false;
@@ -38,7 +41,8 @@ public class STDemo implements VM {
         ST<Object> tree = new STProxy<>(0, null);
 
         //List<Object> leaves = strictDFS(tree);
-        List<Object> leaves = lazyDFS(tree).limit(2).collect(Collectors.toList());
+        List<Object> leaves = TreeDFSIterator.stream(tree, this).limit(2).collect(Collectors.toList());
+        //List<Object> leaves = TreeBFSIterator.stream(tree, this).limit(2).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
         printDFS(tree, 0);
@@ -78,14 +82,6 @@ public class STDemo implements VM {
         } else {
             throw new IllegalStateException("Unknown tree node type.");
         }
-    }
-
-    public Stream<Object> lazyDFS(ST tree) {
-        return StreamSupport.stream(new TreeDFSIterator<>(tree, this), false);
-    }
-
-    public Stream<Object> lazyBFS(ST tree) {
-        return StreamSupport.stream(new TreeBFSIterator<>(tree, this), false);
     }
 
     public void printDFS(ST tree, int depth) {

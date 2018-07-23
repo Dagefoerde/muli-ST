@@ -1,6 +1,9 @@
+package examples;
+
 import searchtree.Choice;
 import searchtree.ST;
 import searchtree.Value;
+import vm.VM;
 
 /**
  * pc 0: boolean coin free;
@@ -10,7 +13,7 @@ import searchtree.Value;
  *    4:    return (coin1 && true);
  *    5: }
  */public class SimpleCoin  implements Program {
-    public ST execute(STDemo vm, int pc) {
+    public ST execute(VM vm, int pc) {
         switch (pc) {
             case 0:
                 vm.setPC(0);

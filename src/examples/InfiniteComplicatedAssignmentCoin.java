@@ -1,6 +1,9 @@
+package examples;
+
 import searchtree.Choice;
 import searchtree.ST;
 import searchtree.Value;
+import vm.VM;
 
 /**
  * pc 0: boolean coin free, coin2 free;
@@ -19,7 +22,7 @@ import searchtree.Value;
  *    13:return i;
  */
 public class InfiniteComplicatedAssignmentCoin implements Program {
-    public ST execute(STDemo vm, int pc) {
+    public ST execute(VM vm, int pc) {
         switch (pc) {
             case 0:
                 vm.setPC(0);
