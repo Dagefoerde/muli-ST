@@ -28,7 +28,8 @@ public class STDemo implements VM {
         //program = new ComplicatedCoin();
         //program = new InfiniteCoin();
         //program = new InfinitePrintingCoin();
-        program = new AssignmentCoin();
+        //program = new AssignmentCoin();
+        program = new ComplicatedAssignmentCoin();
 
         // Init execution.
         heap = new HashMap<>();
@@ -165,6 +166,7 @@ public class STDemo implements VM {
 
     public void revertState(Stack<TrailElement> previousState) {
         this.restoringMode = true;
+        // TODO Reverse order.
         for (TrailElement e : previousState) {
             if (e instanceof VariableChanged) {
                 VariableChanged vc = (VariableChanged) e;
