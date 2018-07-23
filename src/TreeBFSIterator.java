@@ -14,6 +14,7 @@ class TreeBFSIterator<T> implements Spliterator<T> {
 
     @Override
     public boolean tryAdvance(Consumer<? super T> action) {
+        // TODO add use of trail for backtracking/application of states.
         if (queue.isEmpty()) {
             return false;
         }

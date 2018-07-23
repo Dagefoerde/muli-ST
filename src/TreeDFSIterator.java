@@ -14,6 +14,7 @@ class TreeDFSIterator<T> implements Spliterator<T> {
 
     @Override
     public boolean tryAdvance(Consumer<? super T> action) {
+        // TODO add use of trail for backtracking/application of states.
         if (nodes.isEmpty()) {
             return false;
         }

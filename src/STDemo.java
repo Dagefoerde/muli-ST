@@ -29,10 +29,10 @@ public class STDemo {
         // Init execution.
         heap = new HashMap<>();
         currentTrail = new Stack<>();
-        ST<Object> tree = new UnevaluatedST<>(0, new Stack<>());
+        ST<Object> tree = new UnevaluatedST<>(0, null);
 
-        //List<Object> leaves = strictDFS(tree);
-        List<Object> leaves = lazyDFS(tree).limit(6).collect(Collectors.toList());
+        List<Object> leaves = strictDFS(tree);
+        //List<Object> leaves = lazyDFS(tree).limit(6).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
         printDFS(tree, 0);
@@ -44,18 +44,27 @@ public class STDemo {
 
     public List strictDFS(ST tree) {
         if (tree instanceof Fail) {
+            this.revertState(this.getCurrentTrail());
             return Collections.EMPTY_LIST;
         } else if (tree instanceof Exception) {
             ArrayList l = new ArrayList();
             l.add(((Exception)tree).exception);
+            this.revertState(this.getCurrentTrail());
             return l;
         } else if (tree instanceof Value) {
             ArrayList l = new ArrayList();
             l.add(((Value)tree).value);
+            this.revertState(this.getCurrentTrail());
             return l;
         } else if (tree instanceof Choice) {
-            List list = strictDFS(((Choice) tree).st1);
-            list.addAll(strictDFS(((Choice) tree).st2));
+            // Apply state from `previousState`:
+            // Not needed, because we got here via strict DFS and sibling branches remove their effects themselves.
+            // this.applyState(previousState); (might be needed for lazy strategies.)
+            Choice c = (Choice) tree;
+            List list = strictDFS(c.st1);
+            // Intermediate effects were removed by strictDFS.
+            list.addAll(strictDFS(c.st2));
+            this.revertState(c.trail);
             return list;
         } else if (tree instanceof UnevaluatedST) {
             UnevaluatedST uneval = (UnevaluatedST) tree;
@@ -147,6 +156,28 @@ public class STDemo {
         }
         this.restoringMode = false;
     }
+
+    public void revertState(Stack<TrailElement> previousState) {
+        this.restoringMode = true;
+        for (TrailElement e : previousState) {
+            if (e instanceof VariableChanged) {
+                VariableChanged vc = (VariableChanged) e;
+                if (vc.formerValue.isPresent()) {
+                    this.setVar(vc.variable, vc.formerValue.get());
+                } else {
+                    this.removeVar(vc.variable);
+                }
+            }
+        }
+        this.restoringMode = false;
+    }
+
+    private void removeVar(String variable) {
+        if (!this.restoringMode) {
+            throw new IllegalStateException("Precondition violated: Must not be used outside restoring mode.");
+        }
+        heap.remove(variable);
+    }
 }
 
 abstract class ST<A> {
@@ -171,24 +202,32 @@ class Value<A> extends ST<A> {
 
 class Choice<A> extends ST<A> {
 
+    public final Stack<TrailElement> trail;
     public ST<A> st1;
     public ST<A> st2;
     private final String ce1;
     private final String ce2;
 
     public Choice(int pcNext, int pcWithJump, String constraintExpression, Stack<TrailElement> state) {
-        this.st1 = new UnevaluatedST<A>(pcNext, state);
-        this.st2 = new UnevaluatedST<A>(pcWithJump, state);
+        this.st1 = new UnevaluatedST<A>(pcNext, this);
+        this.st2 = new UnevaluatedST<A>(pcWithJump, this);
         this.ce1 = constraintExpression;
         this.ce2 = "not " + constraintExpression;
+        this.trail = state;
     }
 
 
 }
 
 class UnevaluatedST<A> extends ST<A> {
+    /**
+     * PC at which execution has to continue for evaluation.
+     */
     private final int pc;
-    private final Stack<TrailElement> previousState;
+    /**
+     * Records the direct parent in order to be able to obtain its trail if needed.
+     */
+    private final Choice<A> childOf;
 
     private ST<A> evaluated = null;
 
@@ -196,8 +235,8 @@ class UnevaluatedST<A> extends ST<A> {
         return this.evaluated != null;
     }
 
-    public UnevaluatedST(int pc, Stack<TrailElement> previousState) {
-        this.previousState = previousState;
+    public UnevaluatedST(int pc, Choice<A> childOf) {
+        this.childOf = childOf;
         this.pc = pc;
 
     }
@@ -207,11 +246,8 @@ class UnevaluatedST<A> extends ST<A> {
             return evaluated;
         }
 
-        // Apply state from `previousState`.
-        vm.applyState(previousState);
         vm.setPC(this.pc);
         this.evaluated = vm.execute();
-        // this.previousState = null; (previousState not needed anymore).
         return this.evaluated;
     }
 }
