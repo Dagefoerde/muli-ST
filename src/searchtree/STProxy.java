@@ -1,7 +1,10 @@
 package searchtree;
 
 
+import trail.TrailElement;
 import vm.VM;
+
+import java.util.Stack;
 
 public class STProxy<A> extends ST<A> {
     /**
@@ -34,5 +37,25 @@ public class STProxy<A> extends ST<A> {
         vm.setPC(this.pc);
         this.evaluated = vm.execute();
         return this.evaluated;
+    }
+
+    /**
+     * For a (proxy) node n with parents p_1, p_2, ..., p_i, r where r is root,
+     * the trail of n is trail(r) ++ trail(p_i) ++ .. ++ trail(p_2) ++ trail(p1).
+     * n does not have a local trail.
+     * @return
+     */
+    public Stack<TrailElement> getTrail() {
+        Choice<A> before = this.childOf;
+        Stack<TrailElement> trail = new Stack<>();
+        while (before != null) {
+            trail.addAll(0, before.trail);
+            before = before.parent;
+        }
+        return trail;
+    }
+
+    public Choice getParent() {
+        return childOf;
     }
 }

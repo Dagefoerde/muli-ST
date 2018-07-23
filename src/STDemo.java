@@ -1,14 +1,17 @@
 import searchtree.*;
+import searchtree.Exception;
 import trail.TrailElement;
 import trail.VariableChanged;
 import vm.VM;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class STDemo implements VM {
     private boolean restoringMode = false;
+    private Choice currentChoice;
 
     public static void main(String[] args) {
         new STDemo();
@@ -32,8 +35,8 @@ public class STDemo implements VM {
         currentTrail = new Stack<>();
         ST<Object> tree = new STProxy<>(0, null);
 
-        List<Object> leaves = strictDFS(tree);
-        //List<Object> leaves = lazyDFS(tree).limit(6).collect(Collectors.toList());
+        //List<Object> leaves = strictDFS(tree);
+        List<Object> leaves = lazyBFS(tree).limit(6).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
         printDFS(tree, 0);
@@ -47,9 +50,9 @@ public class STDemo implements VM {
         if (tree instanceof Fail) {
             this.revertState(this.getCurrentTrail());
             return Collections.EMPTY_LIST;
-        } else if (tree instanceof searchtree.Exception) {
+        } else if (tree instanceof Exception) {
             ArrayList l = new ArrayList();
-            l.add(((searchtree.Exception)tree).exception);
+            l.add(((Exception)tree).exception);
             this.revertState(this.getCurrentTrail());
             return l;
         } else if (tree instanceof Value) {
@@ -86,8 +89,8 @@ public class STDemo implements VM {
     public void printDFS(ST tree, int depth) {
         if (tree instanceof Fail) {
             System.out.println(repeat("    ", depth) + "- Fail");
-        } else if (tree instanceof searchtree.Exception) {
-            System.out.println(repeat("    ", depth) + "- Exception " + ((searchtree.Exception)tree).exception);
+        } else if (tree instanceof Exception) {
+            System.out.println(repeat("    ", depth) + "- Exception " + ((Exception)tree).exception);
         } else if (tree instanceof Value) {
             System.out.println(repeat("    ", depth) + "- Value " + ((Value)tree).value);
         } else if (tree instanceof Choice) {
@@ -180,6 +183,14 @@ public class STDemo implements VM {
             throw new IllegalStateException("Precondition violated: Must not be used outside restoring mode.");
         }
         heap.remove(variable);
+    }
+
+    public Choice getCurrentChoice() {
+        return currentChoice;
+    }
+
+    public void setCurrentChoice(Choice currentChoice) {
+        this.currentChoice = currentChoice;
     }
 }
 
