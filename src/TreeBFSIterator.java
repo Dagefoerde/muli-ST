@@ -35,18 +35,23 @@ class TreeBFSIterator<T> implements Spliterator<T> {
             return tryAdvance(action);
         } else if (tree instanceof STProxy) {
             STProxy<T> uneval = (STProxy<T>) tree;
-            // Compute trail for restoring state.
-            LinkedList<TrailElement> trail = uneval.getTrail();
-            // Apply VM state.
-            this.vm.applyState(trail);
-            Choice<T> previousChoice = this.vm.getCurrentChoice();
-            this.vm.setCurrentChoice(uneval.getParent());
-            // Evaluate subtree.
-            ST result = uneval.eval(this.vm);
-            // Revert to previous state.
-            this.vm.revertState(this.vm.getCurrentTrail());
-            this.vm.revertState(trail);
-            this.vm.setCurrentChoice(previousChoice);
+            ST result;
+            if (!uneval.isEvaluated()) {
+                // Compute trail for restoring state.
+                LinkedList<TrailElement> trail = uneval.getTrail();
+                // Apply VM state.
+                this.vm.applyState(trail);
+                Choice<T> previousChoice = this.vm.getCurrentChoice();
+                this.vm.setCurrentChoice(uneval.getParent());
+                // Evaluate subtree.
+                result = uneval.eval(this.vm);
+                // Revert to previous state.
+                this.vm.revertState(this.vm.getCurrentTrail());
+                this.vm.revertState(trail);
+                this.vm.setCurrentChoice(previousChoice);
+            } else {
+                result = uneval.eval(this.vm);
+            }
             if (result instanceof Choice) {
                 queue.add(result);
             } else {

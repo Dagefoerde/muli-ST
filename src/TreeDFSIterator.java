@@ -1,5 +1,7 @@
 import searchtree.*;
+import trail.TrailElement;
 
+import java.util.LinkedList;
 import java.util.Spliterator;
 import java.util.Stack;
 import java.util.function.Consumer;
@@ -16,7 +18,6 @@ class TreeDFSIterator<T> implements Spliterator<T> {
 
     @Override
     public boolean tryAdvance(Consumer<? super T> action) {
-        // TODO add use of trail for backtracking/application of states.
         if (nodes.isEmpty()) {
             return false;
         }
@@ -36,8 +37,24 @@ class TreeDFSIterator<T> implements Spliterator<T> {
             return tryAdvance(action);
         } else if (tree instanceof STProxy) {
             STProxy<T> uneval = (STProxy<T>) tree;
-            ST<T> eval = uneval.eval(this.vm);
-            nodes.push(eval);
+            ST result;
+            if (!uneval.isEvaluated()) {
+                // Compute trail for restoring state.
+                LinkedList<TrailElement> trail = uneval.getTrail();
+                // Apply VM state.
+                this.vm.applyState(trail);
+                Choice<T> previousChoice = this.vm.getCurrentChoice();
+                this.vm.setCurrentChoice(uneval.getParent());
+                // Evaluate subtree.
+                result = uneval.eval(this.vm);
+                // Revert to previous state.
+                this.vm.revertState(this.vm.getCurrentTrail());
+                this.vm.revertState(trail);
+                this.vm.setCurrentChoice(previousChoice);
+            } else {
+                result = uneval.eval(this.vm);
+            }
+            nodes.push(result);
             return tryAdvance(action);
         } else {
             throw new IllegalStateException();
