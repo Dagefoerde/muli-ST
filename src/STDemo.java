@@ -2,7 +2,6 @@ import trail.TrailElement;
 import trail.VariableChanged;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -29,7 +28,7 @@ public class STDemo {
         // Init execution.
         heap = new HashMap<>();
         currentTrail = new Stack<>();
-        ST<Object> tree = new UnevaluatedST<>(0, null);
+        ST<Object> tree = new STProxy<>(0, null);
 
         List<Object> leaves = strictDFS(tree);
         //List<Object> leaves = lazyDFS(tree).limit(6).collect(Collectors.toList());
@@ -66,8 +65,8 @@ public class STDemo {
             list.addAll(strictDFS(c.st2));
             this.revertState(c.trail);
             return list;
-        } else if (tree instanceof UnevaluatedST) {
-            UnevaluatedST uneval = (UnevaluatedST) tree;
+        } else if (tree instanceof STProxy) {
+            STProxy uneval = (STProxy) tree;
             return strictDFS(uneval.eval(this));
         } else {
             throw new IllegalStateException("Unknown tree node type.");
@@ -94,10 +93,10 @@ public class STDemo {
             System.out.println(repeat("    ", depth) + "- Choice ");
             printDFS(((Choice) tree).st1, depth + 1);
             printDFS(((Choice) tree).st2, depth + 1);
-        } else if (tree instanceof UnevaluatedST) {
-            if (((UnevaluatedST)tree).isEvaluated()) printDFS(((UnevaluatedST)tree).eval(this), depth);
+        } else if (tree instanceof STProxy) {
+            if (((STProxy)tree).isEvaluated()) printDFS(((STProxy)tree).eval(this), depth);
             else
-                System.out.println(repeat("    ", depth) + "- UnevaluatedST ");
+                System.out.println(repeat("    ", depth) + "- STProxy ");
         } else {
             throw new IllegalStateException("Unknown tree node type.");
         }
@@ -209,8 +208,8 @@ class Choice<A> extends ST<A> {
     private final String ce2;
 
     public Choice(int pcNext, int pcWithJump, String constraintExpression, Stack<TrailElement> state) {
-        this.st1 = new UnevaluatedST<A>(pcNext, this);
-        this.st2 = new UnevaluatedST<A>(pcWithJump, this);
+        this.st1 = new STProxy<A>(pcNext, this);
+        this.st2 = new STProxy<A>(pcWithJump, this);
         this.ce1 = constraintExpression;
         this.ce2 = "not " + constraintExpression;
         this.trail = state;
@@ -219,7 +218,7 @@ class Choice<A> extends ST<A> {
 
 }
 
-class UnevaluatedST<A> extends ST<A> {
+class STProxy<A> extends ST<A> {
     /**
      * PC at which execution has to continue for evaluation.
      */
@@ -235,7 +234,7 @@ class UnevaluatedST<A> extends ST<A> {
         return this.evaluated != null;
     }
 
-    public UnevaluatedST(int pc, Choice<A> childOf) {
+    public STProxy(int pc, Choice<A> childOf) {
         this.childOf = childOf;
         this.pc = pc;
 

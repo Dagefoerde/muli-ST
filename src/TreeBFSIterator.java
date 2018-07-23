@@ -31,8 +31,8 @@ class TreeBFSIterator<T> implements Spliterator<T> {
             queue.add(((Choice) tree).st1);
             queue.add(((Choice) tree).st2);
             return tryAdvance(action);
-        } else if (tree instanceof UnevaluatedST) {
-            UnevaluatedST uneval = (UnevaluatedST) tree;
+        } else if (tree instanceof STProxy) {
+            STProxy uneval = (STProxy) tree;
             ST result = uneval.eval(this.vm);
             if (result instanceof Choice) {
                 queue.add(result);
