@@ -3,10 +3,11 @@
  *    1: int i = 1;
  *    2: if (coin) {
  *    3:    i = 0;
- *          int j = 2;
- *    4: } else {
- *    6: }
- *    7: return i;
+ *    4:    int j = 2;
+ *    5: } else {
+ *    6:    // no-op (expect i == 1 and j erased).
+ *    7: }
+ *    8: return i;
  */
 public class AssignmentCoin implements Program {
     public ST execute(STDemo vm, int pc) {
@@ -18,16 +19,18 @@ public class AssignmentCoin implements Program {
                 vm.setVar("i", 1);
             case 2:
                 vm.setPC(2);
-                return new Choice(3, 5, "true", vm.getCurrentTrail());
+                return new Choice(3, 6, "true", vm.getCurrentTrail());
             case 3:
                 vm.setPC(3);
                 vm.setVar("i", 0);
-                return execute(vm, 7);
-            case 5:
-                vm.setPC(5);
-                vm.setVar("i", 2);
-            case 7:
-                vm.setPC(7);
+            case 4:
+                vm.setPC(4);
+                vm.setVar("j", 2);
+                return execute(vm, 8);
+            case 6:
+                vm.setPC(6);
+            case 8:
+                vm.setPC(8);
                 return new Value(vm.getVar("i"));
             default:
                 throw new IllegalStateException();
