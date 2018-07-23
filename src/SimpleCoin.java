@@ -16,7 +16,7 @@ import searchtree.Value;
                 vm.setPC(0);
             case 1:
                 vm.setPC(1);
-                return new Choice(2, 4, "true", vm.getCurrentTrail());
+                return new Choice(2, 4, "true", vm.getCurrentTrail(), vm.getCurrentChoice());
             case 2:
                 vm.setPC(2);
                 return new Value("coin || False"); // True

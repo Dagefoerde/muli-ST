@@ -26,10 +26,10 @@ public class InfinitePrintingCoin implements Program {
                 vm.setPC(0);
             case 1:
                 vm.setPC(1);
-                return new Choice(2, 9, "true", vm.getCurrentTrail());
+                return new Choice(2, 9, "true", vm.getCurrentTrail(), vm.getCurrentChoice());
             case 2:
                 vm.setPC(2);
-                return new Choice(1, 5, "true", vm.getCurrentTrail());
+                return new Choice(1, 5, "true", vm.getCurrentTrail(), vm.getCurrentChoice());
             case 5:
                 vm.setPC(5);
                 vm.println("Hi");
@@ -38,7 +38,7 @@ public class InfinitePrintingCoin implements Program {
                 return new Value("coin || coin2"); // True
             case 9:
                 vm.setPC(9);
-                return new Choice(10, 12, "true", vm.getCurrentTrail());
+                return new Choice(10, 12, "true", vm.getCurrentTrail(), vm.getCurrentChoice());
             case 10:
                 vm.setPC(10);
                 return new Value("coin && coin2"); // False

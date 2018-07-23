@@ -23,7 +23,7 @@ public class AssignmentCoin implements Program {
                 vm.setVar("i", 1);
             case 2:
                 vm.setPC(2);
-                return new Choice(3, 6, "true", vm.getCurrentTrail());
+                return new Choice(3, 6, "true", vm.getCurrentTrail(), vm.getCurrentChoice());
             case 3:
                 vm.setPC(3);
                 vm.setVar("i", 0);
