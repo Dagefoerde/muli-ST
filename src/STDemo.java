@@ -166,8 +166,8 @@ public class STDemo implements VM {
 
     public void revertState(LinkedList<TrailElement> previousState) {
         this.restoringMode = true;
-        // TODO Reverse order.
-        for (TrailElement e : previousState) {
+        for (Iterator<TrailElement> it = previousState.descendingIterator(); it.hasNext(); ) {
+            TrailElement e = it.next();
             if (e instanceof VariableChanged) {
                 VariableChanged vc = (VariableChanged) e;
                 if (vc.formerValue.isPresent()) {
