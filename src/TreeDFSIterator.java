@@ -35,7 +35,7 @@ class TreeDFSIterator<T> implements Spliterator<T> {
             nodes.push(((Choice<T>) tree).st1);
             return tryAdvance(action);
         } else if (tree instanceof STProxy) {
-            STProxy uneval = (STProxy) tree;
+            STProxy<T> uneval = (STProxy<T>) tree;
             ST<T> eval = uneval.eval(this.vm);
             nodes.push(eval);
             return tryAdvance(action);
