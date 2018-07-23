@@ -1,7 +1,9 @@
 import searchtree.*;
+import trail.TrailElement;
 
 import java.util.LinkedList;
 import java.util.Spliterator;
+import java.util.Stack;
 import java.util.function.Consumer;
 
 class TreeBFSIterator<T> implements Spliterator<T> {
@@ -30,12 +32,23 @@ class TreeBFSIterator<T> implements Spliterator<T> {
             action.accept(((Value<T>)tree).value);
             return true;
         } else if (tree instanceof Choice) {
-            queue.add(((Choice) tree).st1);
-            queue.add(((Choice) tree).st2);
+            queue.add(((Choice<T>) tree).st1);
+            queue.add(((Choice<T>) tree).st2);
             return tryAdvance(action);
         } else if (tree instanceof STProxy) {
-            STProxy uneval = (STProxy) tree;
+            STProxy<T> uneval = (STProxy<T>) tree;
+            // Compute trail for restoring state.
+            Stack<TrailElement> trail = uneval.getTrail();
+            // Apply VM state.
+            this.vm.applyState(trail);
+            Choice<T> previousChoice = this.vm.getCurrentChoice();
+            this.vm.setCurrentChoice(uneval.getParent());
+            // Evaluate subtree.
             ST result = uneval.eval(this.vm);
+            // Revert to previous state.
+            this.vm.revertState(this.vm.getCurrentTrail());
+            this.vm.revertState(trail);
+            this.vm.setCurrentChoice(previousChoice);
             if (result instanceof Choice) {
                 queue.add(result);
             } else {
