@@ -1,11 +1,13 @@
+import searchtree.*;
 import trail.TrailElement;
 import trail.VariableChanged;
+import vm.VM;
 
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class STDemo {
+public class STDemo implements VM {
     private boolean restoringMode = false;
 
     public static void main(String[] args) {
@@ -45,9 +47,9 @@ public class STDemo {
         if (tree instanceof Fail) {
             this.revertState(this.getCurrentTrail());
             return Collections.EMPTY_LIST;
-        } else if (tree instanceof Exception) {
+        } else if (tree instanceof searchtree.Exception) {
             ArrayList l = new ArrayList();
-            l.add(((Exception)tree).exception);
+            l.add(((searchtree.Exception)tree).exception);
             this.revertState(this.getCurrentTrail());
             return l;
         } else if (tree instanceof Value) {
@@ -84,8 +86,8 @@ public class STDemo {
     public void printDFS(ST tree, int depth) {
         if (tree instanceof Fail) {
             System.out.println(repeat("    ", depth) + "- Fail");
-        } else if (tree instanceof Exception) {
-            System.out.println(repeat("    ", depth) + "- Exception " + ((Exception)tree).exception);
+        } else if (tree instanceof searchtree.Exception) {
+            System.out.println(repeat("    ", depth) + "- Exception " + ((searchtree.Exception)tree).exception);
         } else if (tree instanceof Value) {
             System.out.println(repeat("    ", depth) + "- Value " + ((Value)tree).value);
         } else if (tree instanceof Choice) {
@@ -110,6 +112,7 @@ public class STDemo {
         return result.toString();
     }
 
+    @Override
     public void setPC(int pc) {
         this.pc = pc;
     }
@@ -118,6 +121,7 @@ public class STDemo {
         return this.pc;
     }
 
+    @Override
     public ST execute() {
         return program.execute(this, this.getPC());
     }
@@ -179,75 +183,4 @@ public class STDemo {
     }
 }
 
-abstract class ST<A> {
-
-}
-
-
-
-class Fail extends ST {}
-
-class Exception extends ST {
-    public Throwable exception;
-}
-
-class Value<A> extends ST<A> {
-    public A value;
-
-    public Value(A s) {
-        this.value = s;
-    }
-}
-
-class Choice<A> extends ST<A> {
-
-    public final Stack<TrailElement> trail;
-    public ST<A> st1;
-    public ST<A> st2;
-    private final String ce1;
-    private final String ce2;
-
-    public Choice(int pcNext, int pcWithJump, String constraintExpression, Stack<TrailElement> state) {
-        this.st1 = new STProxy<A>(pcNext, this);
-        this.st2 = new STProxy<A>(pcWithJump, this);
-        this.ce1 = constraintExpression;
-        this.ce2 = "not " + constraintExpression;
-        this.trail = state;
-    }
-
-
-}
-
-class STProxy<A> extends ST<A> {
-    /**
-     * PC at which execution has to continue for evaluation.
-     */
-    private final int pc;
-    /**
-     * Records the direct parent in order to be able to obtain its trail if needed.
-     */
-    private final Choice<A> childOf;
-
-    private ST<A> evaluated = null;
-
-    public boolean isEvaluated() {
-        return this.evaluated != null;
-    }
-
-    public STProxy(int pc, Choice<A> childOf) {
-        this.childOf = childOf;
-        this.pc = pc;
-
-    }
-
-    public ST<A> eval(STDemo vm) {
-        if (evaluated != null) {
-            return evaluated;
-        }
-
-        vm.setPC(this.pc);
-        this.evaluated = vm.execute();
-        return this.evaluated;
-    }
-}
 

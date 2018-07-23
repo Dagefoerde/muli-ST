@@ -1,3 +1,7 @@
+import searchtree.Choice;
+import searchtree.ST;
+import searchtree.Value;
+
 /**
  * pc 0: boolean coin1 free, coin2 free;
  *    1: if (coin1) {
@@ -27,7 +31,7 @@ public class InfiniteCoin implements Program {
                 return new Choice(1, 5, "true", vm.getCurrentTrail());
             //case 3:
             //    vm.setPC(3);
-            //    return new Value("coin || False"); // True
+            //    return new searchtree.Value("coin || False"); // True
             case 5:
                 vm.setPC(5);
                 return new Value("coin || coin2"); // True

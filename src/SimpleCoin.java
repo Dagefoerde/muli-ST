@@ -1,3 +1,7 @@
+import searchtree.Choice;
+import searchtree.ST;
+import searchtree.Value;
+
 /**
  * pc 0: boolean coin free;
  *    1: if (coin1) {

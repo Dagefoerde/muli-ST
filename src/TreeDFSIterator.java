@@ -1,3 +1,5 @@
+import searchtree.*;
+
 import java.util.Spliterator;
 import java.util.Stack;
 import java.util.function.Consumer;
@@ -21,7 +23,7 @@ class TreeDFSIterator<T> implements Spliterator<T> {
         ST<T> tree = nodes.pop();
         if (tree instanceof Fail) {
             return tryAdvance(action);
-        } else if (tree instanceof Exception) {
+        } else if (tree instanceof searchtree.Exception) {
             action.accept(null);
             return true;
         } else if (tree instanceof Value) {

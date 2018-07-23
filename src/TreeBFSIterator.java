@@ -1,3 +1,5 @@
+import searchtree.*;
+
 import java.util.LinkedList;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -21,7 +23,7 @@ class TreeBFSIterator<T> implements Spliterator<T> {
         ST<T> tree = queue.remove();
         if (tree instanceof Fail) {
             return tryAdvance(action);
-        } else if (tree instanceof Exception) {
+        } else if (tree instanceof searchtree.Exception) {
             action.accept(null);
             return true;
         } else if (tree instanceof Value) {
