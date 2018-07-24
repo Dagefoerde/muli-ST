@@ -1,24 +1,16 @@
-import examples.ComplicatedAssignmentCoin;
+package vm;
+
 import examples.Program;
-import search.TreeBFSIterator;
-import search.TreeDFSIterator;
 import searchtree.*;
 import searchtree.Exception;
 import trail.TrailElement;
 import trail.VariableChanged;
-import vm.VM;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class STDemo implements VM {
+public class LogicVM implements VM {
     private boolean restoringMode = false;
     private Choice currentChoice;
-
-    public static void main(String[] args) {
-        new STDemo();
-    }
 
     private int pc;
 
@@ -26,30 +18,17 @@ public class STDemo implements VM {
     private HashMap<String, Integer> heap;
     private LinkedList<TrailElement> currentTrail;
 
-    public STDemo() {
-        //program = new SimpleCoin();
-        //program = new ComplicatedCoin();
-        //program = new InfiniteCoin();
-        //program = new InfinitePrintingCoin();
-        //program = new AssignmentCoin();
-        this.setProgram(new ComplicatedAssignmentCoin());
-        //program = new InfiniteComplicatedAssignmentCoin();
-
+    public LogicVM() {
         // Init execution.
         heap = new HashMap<>();
         currentTrail = new LinkedList<>();
-        ST<Object> tree = new STProxy<>(0, null);
-
-        //List<Object> leaves = strictDFS(tree);
-        List<Object> leaves = TreeDFSIterator.stream(tree, this).limit(2).collect(Collectors.toList());
-        //List<Object> leaves = TreeBFSIterator.stream(tree, this).limit(2).collect(Collectors.toList());
         System.out.print("Traversiert: ");
-        Stream.of(leaves).forEach(System.out::println);
-        printDFS(tree, 0, this);
 
-        System.out.println("Heap after (expect empty):");
-        heap.forEach((k,v) -> System.out.println(String.format("%s:%s",k, v)));
+    }
 
+    @Override
+    public void setProgram(Program program) {
+        this.program = program;
     }
 
     public List strictDFS(ST tree) {
@@ -84,7 +63,7 @@ public class STDemo implements VM {
         }
     }
 
-    public static void printDFS(ST tree, int depth, VM vm) {
+    public void printDFS(ST tree, int depth) {
         if (tree instanceof Fail) {
             System.out.println(repeat("    ", depth) + "- Fail");
         } else if (tree instanceof Exception) {
@@ -94,10 +73,10 @@ public class STDemo implements VM {
         } else if (tree instanceof Choice) {
             
             System.out.println(repeat("    ", depth) + "- Choice ");
-            printDFS(((Choice) tree).st1, depth + 1, vm);
-            printDFS(((Choice) tree).st2, depth + 1, vm);
+            printDFS(((Choice) tree).st1, depth + 1);
+            printDFS(((Choice) tree).st2, depth + 1);
         } else if (tree instanceof STProxy) {
-            if (((STProxy)tree).isEvaluated()) printDFS(((STProxy)tree).eval(vm), depth, vm);
+            if (((STProxy)tree).isEvaluated()) printDFS(((STProxy)tree).eval(this), depth);
             else
                 System.out.println(repeat("    ", depth) + "- (not evaluated) ");
         } else {
@@ -105,7 +84,7 @@ public class STDemo implements VM {
         }
     }
 
-    private static String repeat(String s, int depth) {
+    private String repeat(String s, int depth) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < depth; i++) {
             result.append(s);
@@ -148,11 +127,6 @@ public class STDemo implements VM {
         LinkedList<TrailElement> trail = this.currentTrail;
         this.currentTrail = new LinkedList<>();
         return trail;
-    }
-
-    @Override
-    public void setProgram(Program program) {
-        this.program = program;
     }
 
     public void applyState(LinkedList<TrailElement> previousState) {

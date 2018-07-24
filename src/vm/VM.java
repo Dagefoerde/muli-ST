@@ -1,5 +1,7 @@
 package vm;
 
+import examples.Program;
+import examples.SimpleCoin;
 import searchtree.Choice;
 import searchtree.ST;
 import trail.TrailElement;
@@ -26,4 +28,6 @@ public interface VM {
     LinkedList<TrailElement> getCurrentTrail();
 
     <T> Choice<T> getCurrentChoice();
+
+    void setProgram(Program program);
 }
