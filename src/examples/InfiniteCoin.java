@@ -28,10 +28,10 @@ public class InfiniteCoin implements Program {
                 vm.setPC(0);
             case 1:
                 vm.setPC(1);
-                return new Choice(2, 8, "true", vm.getCurrentTrail(), vm.getCurrentChoice());
+                return new Choice(2, 8, "true", vm.extractCurrentTrail(), vm.getCurrentChoice());
             case 2:
                 vm.setPC(2);
-                return new Choice(1, 5, "true", vm.getCurrentTrail(), vm.getCurrentChoice());
+                return new Choice(1, 5, "true", vm.extractCurrentTrail(), vm.getCurrentChoice());
             //case 3:
             //    vm.setPC(3);
             //    return new searchtree.Value("coin || False"); // True
@@ -40,7 +40,7 @@ public class InfiniteCoin implements Program {
                 return new Value("coin || coin2"); // True
             case 8:
                 vm.setPC(8);
-                return new Choice(9, 11, "true", vm.getCurrentTrail(), vm.getCurrentChoice());
+                return new Choice(9, 11, "true", vm.extractCurrentTrail(), vm.getCurrentChoice());
             case 9:
                 vm.setPC(9);
                 return new Value("coin && coin2"); // False

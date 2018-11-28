@@ -1,6 +1,5 @@
 import examples.ComplicatedAssignmentCoin;
 import examples.Program;
-import search.TreeBFSIterator;
 import search.TreeDFSIterator;
 import searchtree.*;
 import searchtree.Exception;
@@ -54,17 +53,17 @@ public class STDemo implements VM {
 
     public List strictDFS(ST tree) {
         if (tree instanceof Fail) {
-            this.revertState(this.getCurrentTrail());
+            this.revertState(this.extractCurrentTrail());
             return Collections.EMPTY_LIST;
         } else if (tree instanceof Exception) {
             ArrayList l = new ArrayList();
             l.add(((Exception)tree).exception);
-            this.revertState(this.getCurrentTrail());
+            this.revertState(this.extractCurrentTrail());
             return l;
         } else if (tree instanceof Value) {
             ArrayList l = new ArrayList();
             l.add(((Value)tree).value);
-            this.revertState(this.getCurrentTrail());
+            this.revertState(this.extractCurrentTrail());
             return l;
         } else if (tree instanceof Choice) {
             // Apply state from `previousState`:
@@ -144,7 +143,7 @@ public class STDemo implements VM {
         return heap.get(key);
     }
 
-    public LinkedList<TrailElement> getCurrentTrail() {
+    public LinkedList<TrailElement> extractCurrentTrail() {
         LinkedList<TrailElement> trail = this.currentTrail;
         this.currentTrail = new LinkedList<>();
         return trail;

@@ -25,7 +25,7 @@ public interface VM {
 
     void revertState(LinkedList<TrailElement> trail);
 
-    LinkedList<TrailElement> getCurrentTrail();
+    LinkedList<TrailElement> extractCurrentTrail();
 
     <T> Choice<T> getCurrentChoice();
 

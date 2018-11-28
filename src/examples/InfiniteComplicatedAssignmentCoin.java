@@ -31,7 +31,7 @@ public class InfiniteComplicatedAssignmentCoin implements Program {
                 vm.setVar("i", 1);
             case 2:
                 vm.setPC(2);
-                return new Choice(1, 5, "coin == true", vm.getCurrentTrail(), vm.getCurrentChoice());
+                return new Choice(1, 5, "coin == true", vm.extractCurrentTrail(), vm.getCurrentChoice());
             case 3:
                 vm.setPC(3);
                 vm.setVar("i", 0);
@@ -41,7 +41,7 @@ public class InfiniteComplicatedAssignmentCoin implements Program {
                 vm.setVar("j", 2);
             case 6:
                 vm.setPC(6);
-                return new Choice(7, 9, "coin2 == true", vm.getCurrentTrail(), vm.getCurrentChoice());
+                return new Choice(7, 9, "coin2 == true", vm.extractCurrentTrail(), vm.getCurrentChoice());
             case 7:
                 vm.setPC(7);
                 vm.setVar("j", 0);

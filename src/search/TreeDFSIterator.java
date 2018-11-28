@@ -53,7 +53,7 @@ public class TreeDFSIterator<T> implements Spliterator<T> {
                 // Evaluate subtree.
                 result = uneval.eval(this.vm);
                 // Revert to initial state.
-                this.vm.revertState(this.vm.getCurrentTrail());
+                this.vm.revertState(this.vm.extractCurrentTrail());
                 if (result instanceof Choice) {
                     this.vm.revertState(((Choice) result).trail);
                 }
