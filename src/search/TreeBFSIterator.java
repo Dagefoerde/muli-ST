@@ -51,8 +51,11 @@ public class TreeBFSIterator<T> implements Spliterator<T> {
                 this.vm.setCurrentChoice(uneval.getParent());
                 // Evaluate subtree.
                 result = uneval.eval(this.vm);
-                // Revert to previous state.
+                // Revert to initial state.
                 this.vm.revertState(this.vm.getCurrentTrail());
+                if (result instanceof Choice) {
+                    this.vm.revertState(((Choice) result).trail);
+                }
                 this.vm.revertState(trail);
                 this.vm.setCurrentChoice(previousChoice);
             } else {

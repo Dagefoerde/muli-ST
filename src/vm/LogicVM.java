@@ -22,8 +22,6 @@ public class LogicVM implements VM {
         // Init execution.
         heap = new HashMap<>();
         currentTrail = new LinkedList<>();
-        System.out.print("Traversiert: ");
-
     }
 
     @Override
