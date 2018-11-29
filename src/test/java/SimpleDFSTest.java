@@ -23,7 +23,7 @@ class SimpleDFSTest {
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         assertIterableEquals(leaves, Arrays.asList(new String[]{"coin || False", "coin && True"}));
 
@@ -42,7 +42,7 @@ class SimpleDFSTest {
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(4).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         // We intentionally requested up to 4 using `limit()` but the program only has 2 solutions.
         assertEquals(2, leaves.size());
@@ -64,7 +64,7 @@ class SimpleDFSTest {
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(4).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         // We intentionally requested up to 4 using `limit()` but the program only has 3 solutions.
         assertEquals(3, leaves.size());
@@ -86,7 +86,7 @@ class SimpleDFSTest {
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         assertEquals(2, leaves.size());
 
@@ -107,7 +107,7 @@ class SimpleDFSTest {
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(8).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         // Intentional limit 8 vs. expect 4.
         assertEquals(4, leaves.size());
@@ -130,7 +130,7 @@ class SimpleDFSTest {
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(1).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         assertIterableEquals(leaves, Arrays.asList("coin1 || False"));
 

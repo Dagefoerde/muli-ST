@@ -35,7 +35,7 @@ class InfiniteBFSTest {
         List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         assertEquals(2, leaves.size());
 
@@ -54,7 +54,7 @@ class InfiniteBFSTest {
         List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(6).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         assertEquals(6, leaves.size());
 
@@ -74,7 +74,7 @@ class InfiniteBFSTest {
         List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(n).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
+        vm.printDFS(tree, 0);
 
         assertEquals(n, leaves.size());
 

@@ -44,7 +44,7 @@ public class STDemo implements VM {
         //List<Object> leaves = TreeBFSIterator.stream(tree, this).limit(2).collect(Collectors.toList());
         System.out.print("Traversiert: ");
         Stream.of(leaves).forEach(System.out::println);
-        printDFS(tree, 0, this);
+        //printDFS(tree, 0, this);
 
         System.out.println("Heap after (expect empty):");
         heap.forEach((k,v) -> System.out.println(String.format("%s:%s",k, v)));
@@ -81,35 +81,6 @@ public class STDemo implements VM {
         } else {
             throw new IllegalStateException("Unknown tree node type.");
         }
-    }
-
-    public static void printDFS(ST tree, int depth, VM vm) {
-        if (tree instanceof Fail) {
-            System.out.println(repeat("    ", depth) + "- Fail");
-        } else if (tree instanceof Exception) {
-            System.out.println(repeat("    ", depth) + "- Exception " + ((Exception)tree).exception);
-        } else if (tree instanceof Value) {
-            System.out.println(repeat("    ", depth) + "- Value " + ((Value)tree).value);
-        } else if (tree instanceof Choice) {
-            
-            System.out.println(repeat("    ", depth) + "- Choice ");
-            printDFS(((Choice) tree).st1, depth + 1, vm);
-            printDFS(((Choice) tree).st2, depth + 1, vm);
-        } else if (tree instanceof STProxy) {
-            if (((STProxy)tree).isEvaluated()) printDFS(((STProxy)tree).eval(vm), depth, vm);
-            else
-                System.out.println(repeat("    ", depth) + "- (not evaluated) ");
-        } else {
-            throw new IllegalStateException("Unknown tree node type.");
-        }
-    }
-
-    private static String repeat(String s, int depth) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < depth; i++) {
-            result.append(s);
-        }
-        return result.toString();
     }
 
     @Override
