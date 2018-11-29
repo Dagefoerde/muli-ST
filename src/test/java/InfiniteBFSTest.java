@@ -8,6 +8,8 @@ import searchtree.STProxy;
 import trail.TrailElement;
 import vm.TestableLogicVM;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -139,6 +141,84 @@ class InfiniteBFSTest {
 
         LinkedList<TrailElement> trail = vm.inspectTrail();
         assertTrue(trail.isEmpty());
+    }
+
+    @Test
+    public void infinitePrintingCoin2Test() throws NoSuchFieldException, IllegalAccessException {
+        final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        final PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+
+        vm.setProgram(new examples.InfinitePrintingCoin());
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
+        System.setOut(originalOut);
+
+        Stream.of(leaves).forEach(System.out::println);
+        vm.printDFS(tree, 0);
+
+        assertEquals(2, leaves.size());
+
+        assertIterableEquals(Arrays.asList("coin || coin2", "coin && coin2"), leaves);
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+
+        assertEquals("Hi" + System.lineSeparator(), outContent.toString());
+    }
+
+    @Test
+    public void infinitePrintingCoin3Test() throws NoSuchFieldException, IllegalAccessException {
+        final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        final PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+
+        vm.setProgram(new examples.InfinitePrintingCoin());
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(3).collect(Collectors.toList());
+        System.setOut(originalOut);
+
+        Stream.of(leaves).forEach(System.out::println);
+        vm.printDFS(tree, 0);
+
+        assertEquals(3, leaves.size());
+
+        assertIterableEquals(Arrays.asList("coin || coin2", "coin && coin2", "coin && True"), leaves);
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+
+        assertEquals("Hi" + System.lineSeparator(), outContent.toString());
+    }
+
+    @Test
+    public void infinitePrintingCoinTwiceTest() throws NoSuchFieldException, IllegalAccessException {
+        final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        final PrintStream originalOut = System.out;
+        System.setOut(new PrintStream(outContent));
+
+        vm.setProgram(new examples.InfinitePrintingCoin());
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(4).collect(Collectors.toList());
+        System.setOut(originalOut);
+
+        Stream.of(leaves).forEach(System.out::println);
+        vm.printDFS(tree, 0);
+
+        assertEquals(4, leaves.size());
+
+        assertIterableEquals(Arrays.asList("coin || coin2", "coin && coin2", "coin && True", "coin || coin2"), leaves);
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+
+        assertEquals("Hi" + System.lineSeparator() + "Hi" + System.lineSeparator(), outContent.toString());
     }
 
 }
