@@ -33,9 +33,7 @@ public class InfiniteComplicatedAssignmentCoin implements Program {
                 vm.setPC(2);
                 return new Choice(1, 5, "coin == true", vm.extractCurrentTrail(), vm.getCurrentChoice());
             case 3:
-                vm.setPC(3);
-                vm.setVar("i", 0);
-                return execute(vm, 13);
+                // (Intentionally) unreachable: Short-circuited to pc 1 instead to achieve an infinite tree.
             case 5:
                 vm.setPC(5);
                 vm.setVar("j", 2);
