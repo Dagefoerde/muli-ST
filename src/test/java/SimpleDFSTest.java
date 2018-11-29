@@ -90,7 +90,7 @@ class SimpleDFSTest {
 
         assertEquals(2, leaves.size());
 
-        assertIterableEquals(leaves, Arrays.asList(new Integer[]{0, 1}));
+        assertIterableEquals(leaves, Arrays.asList(0, 1));
 
         HashMap<String, Integer> heap = vm.inspectHeap();
         assertTrue(heap.isEmpty());
@@ -99,4 +99,47 @@ class SimpleDFSTest {
         assertTrue(trail.isEmpty());
     }
 
+    @Test
+    public void complicatedCoinWithTest() throws NoSuchFieldException, IllegalAccessException {
+        TestableLogicVM vm = new TestableLogicVM();
+        vm.setProgram(new examples.ComplicatedCoin());
+        ST<Object> tree = new STProxy<>(0, null);
+        List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(8).collect(Collectors.toList());
+
+        Stream.of(leaves).forEach(System.out::println);
+        STDemo.printDFS(tree, 0, vm);
+
+        // Intentional limit 8 vs. expect 4.
+        assertEquals(4, leaves.size());
+
+        assertIterableEquals(leaves, Arrays.asList("coin1 || False", "coin1 || coin2",
+                "coin1 && coin2", "coin1 && True"));
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+    }
+
+    @Test
+    public void complicatedCoinWithHardLimitTest() throws NoSuchFieldException, IllegalAccessException {
+        TestableLogicVM vm = new TestableLogicVM();
+        vm.setProgram(new examples.ComplicatedCoin());
+        ST<Object> tree = new STProxy<>(0, null);
+        List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(1).collect(Collectors.toList());
+
+        Stream.of(leaves).forEach(System.out::println);
+        STDemo.printDFS(tree, 0, vm);
+
+        assertIterableEquals(leaves, Arrays.asList("coin1 || False"));
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+
+        // TODO Test that branch 2 is "(not evaluated)".
+    }
 }
