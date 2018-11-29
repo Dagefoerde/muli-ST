@@ -85,4 +85,60 @@ class InfiniteBFSTest {
         assertTrue(trail.isEmpty());
     }
 
+    @Test
+    public void infiniteCoin2Test() throws NoSuchFieldException, IllegalAccessException {
+        vm.setProgram(new examples.InfiniteCoin());
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
+
+        Stream.of(leaves).forEach(System.out::println);
+        vm.printDFS(tree, 0);
+
+        assertEquals(2, leaves.size());
+
+        assertIterableEquals(Arrays.asList("coin || coin2", "coin && coin2"), leaves);
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+    }
+
+    @Test
+    public void infiniteCoin6Test() throws NoSuchFieldException, IllegalAccessException {
+        vm.setProgram(new examples.InfiniteCoin());
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(6).collect(Collectors.toList());
+
+        Stream.of(leaves).forEach(System.out::println);
+        vm.printDFS(tree, 0);
+
+        assertEquals(6, leaves.size());
+
+        assertIterableEquals(Arrays.asList("coin || coin2", "coin && coin2", "coin && True", "coin || coin2", "coin && coin2", "coin && True"), leaves);
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 7, 10, 14, 15, 17, 99 })
+    public void infiniteCoinNTest(int n) throws NoSuchFieldException, IllegalAccessException {
+        vm.setProgram(new examples.InfiniteCoin());
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(n).collect(Collectors.toList());
+
+        Stream.of(leaves).forEach(System.out::println);
+        vm.printDFS(tree, 0);
+
+        assertEquals(n, leaves.size());
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+    }
+
 }

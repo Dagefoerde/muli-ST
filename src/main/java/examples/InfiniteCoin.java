@@ -32,9 +32,8 @@ public class InfiniteCoin implements Program {
             case 2:
                 vm.setPC(2);
                 return new Choice(1, 5, "true", vm.extractCurrentTrail(), vm.getCurrentChoice());
-            //case 3:
-            //    vm.setPC(3);
-            //    return new searchtree.Value("coin || False"); // True
+            case 3:
+                // (Intentionally) unreachable: Short-circuited to pc 1 instead to achieve an infinite tree.
             case 5:
                 vm.setPC(5);
                 return new Value("coin || coin2"); // True
