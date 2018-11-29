@@ -1,4 +1,4 @@
-package examples;
+package vm;
 
 import searchtree.ST;
 import vm.VM;

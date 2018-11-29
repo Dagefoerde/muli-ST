@@ -1,6 +1,5 @@
 package vm;
 
-import examples.Program;
 import searchtree.*;
 import searchtree.Exception;
 import trail.TrailElement;

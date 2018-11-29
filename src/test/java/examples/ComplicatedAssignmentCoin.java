@@ -3,13 +3,14 @@ package examples;
 import searchtree.Choice;
 import searchtree.ST;
 import searchtree.Value;
+import vm.Program;
 import vm.VM;
 
 /**
  * pc 0: boolean coin free, coin2 free;
  *    1: int i = 1;
  *    2: if (coin) {
- *    3:    -> 1
+ *    3:    i = 0;
  *    4: } else {
  *    5:    int j = 2;
  *    6:    if (coin2) {
@@ -21,7 +22,7 @@ import vm.VM;
  *    12:}
  *    13:return i;
  */
-public class InfiniteComplicatedAssignmentCoin implements Program {
+public class ComplicatedAssignmentCoin implements Program {
     public ST execute(VM vm, int pc) {
         switch (pc) {
             case 0:
@@ -31,9 +32,11 @@ public class InfiniteComplicatedAssignmentCoin implements Program {
                 vm.setVar("i", 1);
             case 2:
                 vm.setPC(2);
-                return new Choice(1, 5, "coin == true", vm.extractCurrentTrail(), vm.getCurrentChoice());
+                return new Choice(3, 5, "coin == true", vm.extractCurrentTrail(), vm.getCurrentChoice());
             case 3:
-                // (Intentionally) unreachable: Short-circuited to pc 1 instead to achieve an infinite tree.
+                vm.setPC(3);
+                vm.setVar("i", 0);
+                return execute(vm, 13);
             case 5:
                 vm.setPC(5);
                 vm.setVar("j", 2);

@@ -1,12 +1,6 @@
-import examples.ComplicatedAssignmentCoin;
-import examples.Program;
 import search.TreeDFSIterator;
 import searchtree.*;
-import searchtree.Exception;
-import trail.TrailElement;
-import trail.VariableChanged;
 import vm.LogicVM;
-import vm.VM;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +18,7 @@ public class STDemo {
         //program = new InfiniteCoin();
         //program = new InfinitePrintingCoin();
         //program = new AssignmentCoin();
-        vm.setProgram(new ComplicatedAssignmentCoin()); // Expect: Traversiert: [0, 1, 3].
+        //vm.setProgram(new ComplicatedAssignmentCoin()); // Expect: Traversiert: [0, 1, 3].
         //program = new InfiniteComplicatedAssignmentCoin();
 
         // Init execution.

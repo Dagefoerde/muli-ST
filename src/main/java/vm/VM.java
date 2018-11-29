@@ -1,7 +1,5 @@
 package vm;
 
-import examples.Program;
-import examples.SimpleCoin;
 import searchtree.Choice;
 import searchtree.ST;
 import trail.TrailElement;
