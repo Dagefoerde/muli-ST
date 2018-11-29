@@ -1,3 +1,4 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import search.TreeDFSIterator;
 import searchtree.ST;
@@ -15,11 +16,18 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleDFSTest {
+    TestableLogicVM vm;
+    ST<Object> tree;
+
+    @BeforeEach
+    public void setUp() {
+        vm = new TestableLogicVM();
+        tree = new STProxy<>(0, null);
+    }
+
     @Test
     public void simpleCoinTest() throws NoSuchFieldException, IllegalAccessException {
-        TestableLogicVM vm = new TestableLogicVM();
         vm.setProgram(new examples.SimpleCoin());
-        ST<Object> tree = new STProxy<>(0, null);
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
@@ -36,9 +44,7 @@ class SimpleDFSTest {
 
     @Test
     public void assignmentCoinTest() throws NoSuchFieldException, IllegalAccessException {
-        TestableLogicVM vm = new TestableLogicVM();
         vm.setProgram(new examples.AssignmentCoin());
-        ST<Object> tree = new STProxy<>(0, null);
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(4).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
@@ -58,9 +64,7 @@ class SimpleDFSTest {
 
     @Test
     public void complicatedAssignmentCoinTest() throws NoSuchFieldException, IllegalAccessException {
-        TestableLogicVM vm = new TestableLogicVM();
         vm.setProgram(new examples.ComplicatedAssignmentCoin());
-        ST<Object> tree = new STProxy<>(0, null);
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(4).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
@@ -80,9 +84,7 @@ class SimpleDFSTest {
 
     @Test
     public void complicatedAssignmentCoinWithHardLimitTest() throws NoSuchFieldException, IllegalAccessException {
-        TestableLogicVM vm = new TestableLogicVM();
         vm.setProgram(new examples.ComplicatedAssignmentCoin());
-        ST<Object> tree = new STProxy<>(0, null);
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
@@ -101,9 +103,7 @@ class SimpleDFSTest {
 
     @Test
     public void complicatedCoinWithTest() throws NoSuchFieldException, IllegalAccessException {
-        TestableLogicVM vm = new TestableLogicVM();
         vm.setProgram(new examples.ComplicatedCoin());
-        ST<Object> tree = new STProxy<>(0, null);
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(8).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
@@ -124,9 +124,7 @@ class SimpleDFSTest {
 
     @Test
     public void complicatedCoinWithHardLimitTest() throws NoSuchFieldException, IllegalAccessException {
-        TestableLogicVM vm = new TestableLogicVM();
         vm.setProgram(new examples.ComplicatedCoin());
-        ST<Object> tree = new STProxy<>(0, null);
         List<Object> leaves = TreeDFSIterator.stream(tree, vm).limit(1).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
