@@ -53,4 +53,47 @@ class SimpleBFSTest {
         assertTrue(trail.isEmpty());
     }
 
+    @Test
+    public void complicatedAssignmentCoinTest() throws NoSuchFieldException, IllegalAccessException {
+        TestableLogicVM vm = new TestableLogicVM();
+        vm.setProgram(new examples.ComplicatedAssignmentCoin());
+        ST<Object> tree = new STProxy<>(0, null);
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(4).collect(Collectors.toList());
+
+        Stream.of(leaves).forEach(System.out::println);
+        STDemo.printDFS(tree, 0, vm);
+
+        // We intentionally requested up to 4 using `limit()` but the program only has 3 solutions.
+        assertEquals(3, leaves.size());
+
+        assertIterableEquals(leaves, Arrays.asList(new Integer[]{0, 1, 3}));
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+    }
+
+    @Test
+    public void complicatedAssignmentCoinWithHardLimitTest() throws NoSuchFieldException, IllegalAccessException {
+        TestableLogicVM vm = new TestableLogicVM();
+        vm.setProgram(new examples.ComplicatedAssignmentCoin());
+        ST<Object> tree = new STProxy<>(0, null);
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
+
+        Stream.of(leaves).forEach(System.out::println);
+        STDemo.printDFS(tree, 0, vm);
+
+        assertEquals(2, leaves.size());
+
+        assertIterableEquals(leaves, Arrays.asList(new Integer[]{0, 1}));
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+    }
+
 }
