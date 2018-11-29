@@ -1,5 +1,7 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import search.TreeBFSIterator;
 import searchtree.ST;
 import searchtree.STProxy;
@@ -65,100 +67,16 @@ class InfiniteBFSTest {
         assertTrue(trail.isEmpty());
     }
 
-    @Test
-    public void infiniteWithSideEffects7Test() throws NoSuchFieldException, IllegalAccessException {
+    @ParameterizedTest
+    @ValueSource(ints = { 7, 10, 14, 15, 17, 99 })
+    public void infiniteWithSideEffectsNTest(int n) throws NoSuchFieldException, IllegalAccessException {
         vm.setProgram(new examples.InfiniteComplicatedAssignmentCoin());
-        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(7).collect(Collectors.toList());
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(n).collect(Collectors.toList());
 
         Stream.of(leaves).forEach(System.out::println);
         STDemo.printDFS(tree, 0, vm);
 
-        assertEquals(7, leaves.size());
-
-        HashMap<String, Integer> heap = vm.inspectHeap();
-        assertTrue(heap.isEmpty());
-
-        LinkedList<TrailElement> trail = vm.inspectTrail();
-        assertTrue(trail.isEmpty());
-    }
-
-    @Test
-    public void infiniteWithSideEffects10Test() throws NoSuchFieldException, IllegalAccessException {
-        vm.setProgram(new examples.InfiniteComplicatedAssignmentCoin());
-        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(10).collect(Collectors.toList());
-
-        Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
-
-        assertEquals(10, leaves.size());
-
-        HashMap<String, Integer> heap = vm.inspectHeap();
-        assertTrue(heap.isEmpty());
-
-        LinkedList<TrailElement> trail = vm.inspectTrail();
-        assertTrue(trail.isEmpty());
-    }
-
-    @Test
-    public void infiniteWithSideEffects14Test() throws NoSuchFieldException, IllegalAccessException {
-        vm.setProgram(new examples.InfiniteComplicatedAssignmentCoin());
-        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(14).collect(Collectors.toList());
-
-        Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
-
-        assertEquals(14, leaves.size());
-
-        HashMap<String, Integer> heap = vm.inspectHeap();
-        assertTrue(heap.isEmpty());
-
-        LinkedList<TrailElement> trail = vm.inspectTrail();
-        assertTrue(trail.isEmpty());
-    }
-
-    @Test
-    public void infiniteWithSideEffects15Test() throws NoSuchFieldException, IllegalAccessException {
-        vm.setProgram(new examples.InfiniteComplicatedAssignmentCoin());
-        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(15).collect(Collectors.toList());
-
-        Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
-
-        assertEquals(15, leaves.size());
-
-        HashMap<String, Integer> heap = vm.inspectHeap();
-        assertTrue(heap.isEmpty());
-
-        LinkedList<TrailElement> trail = vm.inspectTrail();
-        assertTrue(trail.isEmpty());
-    }
-
-    @Test
-    public void infiniteWithSideEffects17Test() throws NoSuchFieldException, IllegalAccessException {
-        vm.setProgram(new examples.InfiniteComplicatedAssignmentCoin());
-        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(17).collect(Collectors.toList());
-
-        Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
-
-        assertEquals(17, leaves.size());
-
-        HashMap<String, Integer> heap = vm.inspectHeap();
-        assertTrue(heap.isEmpty());
-
-        LinkedList<TrailElement> trail = vm.inspectTrail();
-        assertTrue(trail.isEmpty());
-    }
-
-    @Test
-    public void infiniteWithSideEffects99Test() throws NoSuchFieldException, IllegalAccessException {
-        vm.setProgram(new examples.InfiniteComplicatedAssignmentCoin());
-        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(99).collect(Collectors.toList());
-
-        Stream.of(leaves).forEach(System.out::println);
-        STDemo.printDFS(tree, 0, vm);
-
-        assertEquals(99, leaves.size());
+        assertEquals(n, leaves.size());
 
         HashMap<String, Integer> heap = vm.inspectHeap();
         assertTrue(heap.isEmpty());
