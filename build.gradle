@@ -4,6 +4,8 @@ apply plugin: 'jacoco'
 repositories {
     mavenCentral()
 }
+
+targetCompatibility = '1.8'
  
 dependencies {
     testImplementation('org.junit.jupiter:junit-jupiter-api:5.1.0')
