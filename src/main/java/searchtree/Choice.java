@@ -7,8 +7,8 @@ import java.util.LinkedList;
 public class Choice<A> extends ST<A> {
     public final Choice<A> parent;
     public final LinkedList<TrailElement> trail;
-    public ST<A> st1;
-    public ST<A> st2;
+    public STProxy<A> st1;
+    public STProxy<A> st2;
     private final String ce1;
     private final String ce2;
 
