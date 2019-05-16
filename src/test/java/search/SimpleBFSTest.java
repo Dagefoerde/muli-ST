@@ -3,8 +3,10 @@ package search;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import search.TreeBFSIterator;
+import searchtree.Choice;
 import searchtree.ST;
 import searchtree.STProxy;
+import searchtree.Value;
 import trail.TrailElement;
 import vm.TestableLogicVM;
 
@@ -16,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleBFSTest {
     TestableLogicVM vm;
-    ST<Object> tree;
+    STProxy<Object> tree;
 
     @BeforeEach
     public void setUp() {
@@ -115,6 +117,31 @@ class SimpleBFSTest {
 
         assertIterableEquals(leaves, Arrays.asList("coin1 || False", "coin1 || coin2",
                 "coin1 && coin2", "coin1 && True"));
+
+        HashMap<String, Integer> heap = vm.inspectHeap();
+        assertTrue(heap.isEmpty());
+
+        LinkedList<TrailElement> trail = vm.inspectTrail();
+        assertTrue(trail.isEmpty());
+    }
+
+    @Test
+    public void infiniteComplicatedAssignmentCoinTest() throws NoSuchFieldException, IllegalAccessException {
+        vm.setProgram(new examples.InfiniteComplicatedAssignmentCoin());
+        List<Object> leaves = TreeBFSIterator.stream(tree, vm).limit(2).collect(Collectors.toList());
+
+        Stream.of(leaves).forEach(System.out::println);
+        vm.printDFS(tree, 0);
+
+        assertEquals(2, leaves.size());
+
+        assertTrue(((Choice)tree.eval(vm)).st1.isEvaluated());
+        assertTrue(((Choice)tree.eval(vm)).st2.isEvaluated());
+        assertFalse(((Choice)((Choice)((Choice)tree.eval(vm)).st1.eval(vm)).st1.eval(vm)).st1.isEvaluated());
+        assertTrue((((Choice)((Choice)tree.eval(vm)).st2.eval(vm)).st1.eval(vm)) instanceof Value);
+        assertTrue((((Choice)((Choice)tree.eval(vm)).st2.eval(vm)).st2.eval(vm)) instanceof Value);
+        assertEquals(1, ((Value)(((Choice)((Choice)tree.eval(vm)).st2.eval(vm)).st1.eval(vm))).value);
+        assertEquals(3, ((Value)(((Choice)((Choice)tree.eval(vm)).st2.eval(vm)).st2.eval(vm))).value);
 
         HashMap<String, Integer> heap = vm.inspectHeap();
         assertTrue(heap.isEmpty());
