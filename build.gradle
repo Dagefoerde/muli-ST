@@ -1,6 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'jacoco'
 
+group 'de.wwu.muli'
+version '1.6.3-SNAPSHOT'
+
 repositories {
     mavenCentral()
 }
@@ -8,6 +11,7 @@ repositories {
 targetCompatibility = '1.8'
  
 dependencies {
+    compile project(':muggl-core')
     testImplementation('org.junit.jupiter:junit-jupiter-api:5.1.0')
     testImplementation('org.junit.jupiter:junit-jupiter-params:5.2.0')
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.1.0')
