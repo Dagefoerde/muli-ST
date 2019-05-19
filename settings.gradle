@@ -1,0 +1,3 @@
+include ':muggl-core', ':muggl-solver-muconst', ':muggl-solver-jacop', ':muggl-common', ':muggl-solvers', ':muli-ST'
+
+
